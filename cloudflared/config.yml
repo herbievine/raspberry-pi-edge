@@ -2,21 +2,16 @@
 # which does the real Host-based routing. Fill in <TUNNEL_ID> after
 # `cloudflared tunnel create marvin`, and place its credentials at creds.json.
 #
-# Single-level subdomains only (no sub-sub-domains). Publish DNS for each:
-#   cloudflared tunnel route dns marvin gym.herbievine.com
-#   cloudflared tunnel route dns marvin gym-api.herbievine.com
-#   cloudflared tunnel route dns marvin music.herbievine.com
-#   cloudflared tunnel route dns marvin music-api.herbievine.com
-#   cloudflared tunnel route dns marvin tessera.herbievine.com
-#   cloudflared tunnel route dns marvin tessera-api.herbievine.com
+# Single-level subdomains only (no sub-sub-domains). Publish DNS:
+#   cloudflared tunnel route dns marvin sub.herbievine.com
 
 tunnel: e2ba533d-0540-4cfc-82b1-0116de49f600
 credentials-file: /etc/cloudflared/creds.json
 
 ingress:
-  - hostname: gym.herbievine.com
+  - hostname: metallica.herbievine.com
     service: http://caddy:80
-  - hostname: gym-api.herbievine.com
+  - hostname: metallica-api.herbievine.com
     service: http://caddy:80
   - hostname: music.herbievine.com
     service: http://caddy:80

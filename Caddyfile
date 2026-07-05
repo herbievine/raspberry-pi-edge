@@ -10,10 +10,10 @@
 }
 
 # --- metallica -------------------------------------------------------------
-http://gym.herbievine.com {
+http://metallica.herbievine.com {
 	reverse_proxy metallica-web:80
 }
-http://gym-api.herbievine.com {
+http://metallica-api.herbievine.com {
 	reverse_proxy metallica-api:3000
 }
 
