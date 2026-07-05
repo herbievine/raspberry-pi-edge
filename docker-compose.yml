@@ -1,0 +1,49 @@
+# Edge stack: Cloudflare Tunnel → Caddy reverse proxy.
+#
+# Deploy to marvin at /opt/apps/edge/. Bring this up FIRST (it owns the shared
+# `edge` network that every app stack joins).
+#
+#   docker network create edge          # once, before anything
+#   docker compose up -d
+#
+# TLS terminates at the Cloudflare edge; cloudflared forwards plain HTTP to Caddy,
+# which routes by Host to the app containers (by name) on the `edge` network.
+#
+# Locally-managed tunnel: `cloudflared tunnel create marvin` writes credentials
+# JSON; drop it at ./cloudflared/creds.json and set the tunnel id in
+# ./cloudflared/config.yml. Route DNS with `cloudflared tunnel route dns marvin <host>`.
+name: edge
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    # Published for Tailscale/LAN access (test with a Host header). Cloudflare
+    # Tunnel reaches Caddy over the `edge` network and doesn't need this, but it
+    # lets you verify before the tunnel is wired up.
+    ports:
+      - "80:80"
+    networks: [edge]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    restart: unless-stopped
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    command: tunnel --no-autoupdate --config /etc/cloudflared/config.yml run
+    volumes:
+      - ./cloudflared:/etc/cloudflared:ro
+    networks: [edge]
+    depends_on: [caddy]
+    restart: unless-stopped
+
+networks:
+  edge:
+    external: true
+
+volumes:
+  caddy-data:
+  caddy-config:

@@ -1,0 +1,34 @@
+# Reverse proxy for the marvin app stacks. TLS is terminated by Cloudflare, so
+# Caddy speaks plain HTTP on :80 and routes by Host. `auto_https off` stops Caddy
+# from trying to provision its own certs.
+#
+# Single-level subdomains only (Cloudflare universal TLS doesn't cover
+# sub-sub-domains): <name>.herbievine.com + <name>-api.herbievine.com.
+{
+	auto_https off
+	admin off
+}
+
+# --- metallica -------------------------------------------------------------
+http://gym.herbievine.com {
+	reverse_proxy metallica-web:80
+}
+http://gym-api.herbievine.com {
+	reverse_proxy metallica-api:3000
+}
+
+# --- music -----------------------------------------------------------------
+http://music.herbievine.com {
+	reverse_proxy music-web:80
+}
+http://music-api.herbievine.com {
+	reverse_proxy music-api:3000
+}
+
+# --- tessera ---------------------------------------------------------------
+http://tessera.herbievine.com {
+	reverse_proxy tessera-web:80
+}
+http://tessera-api.herbievine.com {
+	reverse_proxy tessera-api:3010
+}
